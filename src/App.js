@@ -1,24 +1,50 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import {Form} from './component/Form.js';
+import {Liste} from './component/Liste.js';
 
-function App() {
+
+
+function App({add}) {
+  const [taches, setTaches] = useState([
+    {id:1,text:"tache 1 "},
+    {id:2,text:"tache 2 "}
+
+  ]);
+  const [tacheform, setTacheform] = useState({id:0,text:"..... "});
+  add=()=>{
+    setTaches([...taches,tacheform]);
+    fetch(URL,{
+      headers: {
+        'content-type':'application/json'
+      },
+      method:'POST',
+      body:JSON.stringify(tacheform)
+    }).then(res=>all())
+  }
+  const URL= 'http://localhost:3000/taches/';
+  const all=()=>{
+fetch(URL).then(res=>res.json()).then(data=>setTaches(data))
+  }
+  const del=(id)=>{
+    setTaches(taches.filter(t=>t.id!==id))
+    fetch(URL+id,{
+      method:'delete'
+    })
+  }
+  useEffect(() => {
+    all();
+  
+    return () => {
+      
+    };
+  }, []);
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   <div className="mb-3">
+   <Form tacheform={tacheform} add={add} setTaches={setTaches} setTacheform={setTacheform}/>
+  <Liste taches={taches} del={del} />
+   </div>
   );
 }
 
